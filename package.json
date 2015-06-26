@@ -1,0 +1,24 @@
+{
+  "name": "Stockbot",
+  "version": "1.0.0",
+  "description": "Stock Service, a Slack Integration",
+  "main": "stockbot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node stockbot.js"
+  },
+  "author": "Hannes Prirschl",
+  "homepage": "https://github.com/schmafu/stockbot",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/schmafu/stockbot.git"
+  },
+  "dependencies": {
+    "body-parser": "^1.13.1",
+    "express": "^4.13.0",
+    "plotly": "^1.0.2",
+    "request": "^2.58.0",
+    "slack-notify": "^0.1.4"
+  }
+}
