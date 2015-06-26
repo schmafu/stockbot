@@ -26,7 +26,7 @@ var http = require('http');
 
 app.post('/stockquote', function (req, res) {
     if(req.body.token !== config.slackToken) {
-        console.log("falscher token: " + req.body.token); // für die finale version nichts loggen
+      //  console.log("falscher token: " + req.body.token); // für die finale version nichts loggen
         return
     }
 
