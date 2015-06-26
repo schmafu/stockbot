@@ -24,13 +24,9 @@ var http = require('http');
 //var querystring = require('querystring');
 // SMA var MA = require('moving-average');
 
-// post
-// https://hooks.slack.com/services/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
-
-// kXyQoLVMlW1P3na3hdJf30VT
 app.post('/stockquote', function (req, res) {
     if(req.body.token !== config.slackToken) {
-        console.log("falscher token"); // für die finale version nichts loggen
+        console.log("falscher token: " + req.body.token); // für die finale version nichts loggen
         return
     }
 
