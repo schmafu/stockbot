@@ -31,7 +31,7 @@ app.post('/stockquote', function (req, res) {
     var getStock = new Promise(function (resolve, reject) {
         yf(req.body.text, function (data) {
             if (!data) {
-                reject();
+                reject("could not fetch stock quote for " + req.body.text);
                 return;
             }
             resolve(data);
@@ -42,7 +42,7 @@ app.post('/stockquote', function (req, res) {
     var getStockHistory = new Promise(function (resolve, reject) {
         yfh(req.body.text, function (data) {
             if (!data) {
-                reject();
+                reject("could not fetch historical stock data for " + req.body.text);
                 return;
             }
             resolve(data);
@@ -58,49 +58,67 @@ app.post('/stockquote', function (req, res) {
             //for(var i = data.length; i > 0; i--)
             var x = [];
             var y = [];
-            //SMA50    var y50 = [];
-            //SMA200    var y200 = [];
+            var yshort = [];
+            var ylong = [];
             data[1].forEach(function (e, i) {
-                //console.log("" + i + "  " + e);
-                x.unshift(e.Date);
-                y.unshift(e.Close);
+
+                x.push(e.Date);
+                y.push(Math.round(Number(e.Close)*10)/10);
+                if (i === 0) {
+                    yshort.push(Math.round(Number(e.Close)*10)/10);
+                    ylong.push(Math.round(Number(e.Close)*10)/10);
+
+                    return;
+                }
+                if(y.length < 50)
+                    yshort.push(Math.round(Number(y.reduce(function(prev,curr) {return prev+curr;})/ y.length)*10)/10);
+                else
+                    yshort.push(Math.round(Number(y.reduce(function(prev,curr,index,array) {
+                        if(index < array.length - 50)
+                            return 0;
+                        return prev+curr;
+                    })/50)*10)/10);
+
+                if(y.length < 200)
+                    ylong.push(Math.round(Number(y.reduce(function(prev,curr) {return prev+curr;})/ y.length)*10)/10);
+                else
+                    ylong.push(Math.round(Number(y.reduce(function(prev,curr,index,array) {
+                                    if(index < array.length - 200)
+                                        return 0;
+                                    return prev+curr;
+                                })/200)*10)/10);
+
+
+                 // console.log("" + i + " e: " + e.Date + " y50: " + yshort[i]);
             });
 
 
-            //SMA50    var ma50 = MA(50*24*60*60*1000);
-            //SMA200    var ma200 = MA(200*24*60*60*1000);
-
-            /* SMA    x.forEach(function(e,i) {
-             var iDate = new Date( e.substring(0,4), e.substring(5,7)-1,e.substring(8,10));
-             ma50.push(iDate,(i !== 0)? y[i-1] : y[i] );
-             ma200.push(iDate,(i !== 0)? y[i-1] : y[i] );
-             y50[i] = ma50.movingAverage();
-             console.log("" + i + iDate.toString() + "  " + ma50.movingAverage());
-             y200[i] = ma200.movingAverage();
-             }) */
 
             var plotdata = [
                 {
-                    "x": x,
-                    "y": y,
+                    "x": x.slice(149),
+                    "y": y.slice(149),
+                    "name": "Stock Price",
+                    "line":{"width":2},
+                    "type": "scatter"
+                },{
+                    "x": x.slice(149),
+                    "y":yshort.slice(149),
+                    "name": "50 Days SMA",
+                    "mode":"lines",
+                    "line":{"color":"rgb(120,40,40)", "shape":"spline", "width":0.5},
+                    "opacity":0.5,
+                    "type": "scatter"
+                },    {
+                    "x": x.slice(149),
+                    "y":ylong.slice(149),
+                    "name": "200 Days SMA",
+                    "mode":"lines",
+                    "line":{"color":"rgb(40,120,40)", "shape":"spline", width:0.5},
+                    "opacity":0.5,
                     "type": "scatter"
                 }];
-            /* SMA ,
-             {
-             "x":x,
-             "y":y50,
-             "mode":"lines",
-             "line":{"color":"rgb(220,40,40)", "shape":"spline", "dash":"dot"},
-             "type": "scatter"
-             },
-             {
-             "x":x,
-             "y":y200,
-             "mode":"lines",
-             "line":{"color":"rgb(220,40,40)", "shape":"spline", "dash":"dash"},
-             "type": "scatter"
-             }
-             ]; */
+
 
             var layout = {
                 title: "Stock Chart for " + data[0].Name,
@@ -108,15 +126,14 @@ app.post('/stockquote', function (req, res) {
                 xaxis: {title: "Time"}
             };
 
-            console.log(layout);
-            console.log("body text: " + req.body.text);
             var graphOptions = {filename: req.body.text, layout: layout, fileopt: "overwrite"};
 
             plotly.plot(plotdata, graphOptions, function (err, msg) {
                 if (err) {
-                    reject("plotly fail");
+                    reject("plot.ly returned an error: + " + err);
                 }
                 data.push(msg);
+                //console.log("plotly: " + msg);
                 resolve(data);
             });
         });
@@ -130,9 +147,9 @@ app.post('/stockquote', function (req, res) {
      } */
 
 
-    Promise.all([getStock, getStockHistory]).then(drawPlot).then(function (data) {
-        if (!data) return new Error("Keine Daten");
-        console.log("bin im done");
+    Promise.all([getStock, getStockHistory]).then(drawPlot, function(reason) {throw reason;}).then(function (data) {
+        if (!data) throw ("Something went terrible wrong!");
+        //console.log("bin im done");
         var attachments = [];
         var attachment = {};
         var currencySymbol = data[0].Currency;
@@ -197,7 +214,7 @@ app.post('/stockquote', function (req, res) {
         res.send();
     }).catch(function (e) {
         console.log("[ERROR] " + e);
-        res.status(404).send("Fehler: " + e);
+        res.status(404).send("Error: " + e);
     });
 });
 
