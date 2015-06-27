@@ -4,7 +4,7 @@ Slack Integration for Displaying Stock Information
 ## Configuration
 
 A [Slack](https://api.slack.com/) slash-command and an incoming webhook must be configured. Also a [plot.ly](https://plot.ly) account is required for displaying the stock chart.
-
+ 
 
 **config.js**
 ```javascript
