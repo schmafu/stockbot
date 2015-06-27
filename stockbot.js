@@ -23,7 +23,7 @@ var yf = require('./yahoofinance.js');
 
 app.post('/stockquote', function (req, res) {
     if (req.body.token !== config.slackToken) {
-        //  console.log("falscher token: " + req.body.token); // für die finale version nichts loggen
+          console.log("falscher token: " + req.body.token); // für die finale version nichts loggen
         return
     }
 
@@ -54,7 +54,7 @@ app.post('/stockquote', function (req, res) {
     // werden; TODO: SMA50 und SMA200 einzeichnen
     function drawPlot(data) {
         return new Promise(function (resolve, reject) {
-
+            console.log("im DrawPlot");
             //for(var i = data.length; i > 0; i--)
             var x = [];
             var y = [];
@@ -162,20 +162,24 @@ app.post('/stockquote', function (req, res) {
             short: true
         }, {
             title: "Market Cap.",
-            value: data[0].MarketCapitalization,
-            short: true
-        }, {
-            title: "Div. Yield",
-            value: dividendYield,
-            short: true
-        }, {
-            title: "52 Week Range:",
-            value: data[0].YearRange,
+            value: currencySymbol + " " + data[0].MarketCapitalization,
             short: true
         }, {
             title: "EBITDA",
             value: data[0].EBITDA,
             short: true
+        }, {
+            title: "EPS",
+            value: currencySymbol + " " + data[0].EarningsShare,
+            short: true
+        },  {
+            title: "Div. Yield",
+            value: dividendYield,
+            short: true
+        },{
+            title: "52 Week Range:",
+            value: data[0].YearRange,
+            short: false
         }];
         attachment.title_link = data[2].url;
         attachment.image_url = "" + data[2].url + ".png";
