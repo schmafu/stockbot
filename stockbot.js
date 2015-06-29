@@ -19,15 +19,13 @@ var yf = require('./yahoofinance.js');
 //var Promise = require('promise');
 
 
-// SMA var MA = require('moving-average');
-
 app.post('/stockquote', function (req, res) {
     if (req.body.token !== config.slackToken) {
-          console.log("falscher token: " + req.body.token); // für die finale version nichts loggen
+         // console.log("wrong token: " + req.body.token); // for testing purpose
         return
     }
 
-    // allgemeine stockinfos über yahoofinance holen
+    //  fetch stockinfos from yahoofinance (table quotes)
     var getStock = new Promise(function (resolve, reject) {
         yf(req.body.text, function (data) {
             if (!data) {
@@ -38,7 +36,7 @@ app.post('/stockquote', function (req, res) {
 
         })
     });
-    // die tagesschlusskurse der letzten 52 wochen über yahoofinance holen
+    // fetch 52w daily close 
     var getStockHistory = new Promise(function (resolve, reject) {
         yfh(req.body.text, function (data) {
             if (!data) {
@@ -50,16 +48,17 @@ app.post('/stockquote', function (req, res) {
     });
 
 
-    // zeichnet den plot auf plot.ly, user/token müssen in der config angegeben
-    // werden; TODO: SMA50 und SMA200 einzeichnen
+    // draw the plot.ly plot, user/token required. calculates the 2 simple moving averages
+    // smashort and smalong - if they are not configured, calculate them anyway
     function drawPlot(data) {
         return new Promise(function (resolve, reject) {
-            console.log("im DrawPlot");
-            //for(var i = data.length; i > 0; i--)
             var x = [];
             var y = [];
             var yshort = [];
             var ylong = [];
+            
+            var smashort = (config.hasOwnProperty('smashort'))?parseInt(config.smashort):50;
+            var smalong = (config.hasOwnProperty('smalong'))?parseInt(config.smalong):200;
             data[1].forEach(function (e, i) {
 
                 x.push(e.Date);
@@ -70,23 +69,23 @@ app.post('/stockquote', function (req, res) {
 
                     return;
                 }
-                if(y.length < 50)
+                if(y.length < smashort)
                     yshort.push(Math.round(Number(y.reduce(function(prev,curr) {return prev+curr;})/ y.length)*10)/10);
                 else
                     yshort.push(Math.round(Number(y.reduce(function(prev,curr,index,array) {
-                        if(index < array.length - 50)
+                        if(index < array.length - smashort)
                             return 0;
                         return prev+curr;
-                    })/50)*10)/10);
+                    })/smashort)*10)/10);
 
-                if(y.length < 200)
+                if(y.length < smalong)
                     ylong.push(Math.round(Number(y.reduce(function(prev,curr) {return prev+curr;})/ y.length)*10)/10);
                 else
                     ylong.push(Math.round(Number(y.reduce(function(prev,curr,index,array) {
-                                    if(index < array.length - 200)
+                                    if(index < array.length - smalong)
                                         return 0;
                                     return prev+curr;
-                                })/200)*10)/10);
+                                })/smalong)*10)/10);
 
 
                  // console.log("" + i + " e: " + e.Date + " y50: " + yshort[i]);
@@ -101,23 +100,25 @@ app.post('/stockquote', function (req, res) {
                     "name": "Stock Price",
                     "line":{"width":2},
                     "type": "scatter"
-                },{
+                }];
+            if(config.hasOwnProperty('smashort')) plotdata.push({
                     "x": x.slice(149),
                     "y":yshort.slice(149),
-                    "name": "50 Days SMA",
+                    "name": "" + smashort + " Days SMA",
                     "mode":"lines",
                     "line":{"color":"rgb(120,40,40)", "shape":"spline", "width":0.5},
                     "opacity":0.5,
                     "type": "scatter"
-                },    {
+                });
+            if(config.hasOwnProperty('smalong')) plotdata.push({
                     "x": x.slice(149),
                     "y":ylong.slice(149),
-                    "name": "200 Days SMA",
+                    "name": "" + smalong + " Days SMA",
                     "mode":"lines",
                     "line":{"color":"rgb(40,120,40)", "shape":"spline", width:0.5},
                     "opacity":0.5,
                     "type": "scatter"
-                }];
+                });
 
 
             var layout = {
