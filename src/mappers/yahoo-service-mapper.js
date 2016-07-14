@@ -3,7 +3,6 @@ class YahooServiceMapper {
     static mapToStockQuote(jsonString) {
         let data = JSON.parse(jsonString);
         if (data && data.query && data.query.results && data.query.results.quote) {
-            console.log("im if");
             let quote = data.query.results.quote;
             return {
                 symbol: quote.Symbol,

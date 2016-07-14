@@ -30,11 +30,11 @@ app.post("/stockquote", (req, res) => {
     yahoo.fetchQuotes(req.body.text).then(data => {
         let stockbot = new slack(config.webHook);
         stockbot.send({ text: `${data.name || data.symbol}: *${data.priceS}*${data.currency} (${data.changeInPercentS}) Dividend: *${data.dividendYield}%* - 52w: *${data.yearLowS}-${data.yearHighS}*${data.currency} ${data.yearLowHighExplanation}   ${data.symbol.toUpperCase()} on <http://www.google.com/finance?q=${data.symbol}|google> and <http://finance.yahoo.com/quote/${data.symbol}|yahoo>`,
-            channel: "test",
+            channel: "aktien",
             username: "stockbot" });
         res.end();
         //res.json(data);
     });
 });
-app.listen(3000);
+app.listen(4715);
 //# sourceMappingURL=stockbot.js.map
