@@ -1,27 +1,32 @@
 # stockbot
 Slack Integration for Displaying Stock Information
 
+## Changelog
+
+### 2.0
+
+* moved to typescript
+
+* less is more, the plotly integration has been removed. stockbot replies now with a single line of key values
+
 ## Configuration
 
-A [Slack](https://api.slack.com/) slash-command and an incoming webhook must be configured. Also a [plot.ly](https://plot.ly) account is required for displaying the stock chart.
- 
+A [Slack](https://api.slack.com/) slash-command and an incoming webhook must be configured.
 
-**config.js**
+**config.json**
 ```javascript
-var config = {};
-
-config.slackHook = "https://hooks.slack.com/services/personal_hook_url";
-config.slackToken= "slack_token";
-config.plotlyUser = "plot.ly_username";
-config.plotlyToken = "plot.ly_token";
-config.port = 4711;
-
-module.exports = config;
+{
+"slackToken":"secretToken",
+"webHook":"https://hooks.slack.com/services/yourWebHook",
+"port":4715,
+"channel": "stocks",
+"botName": "stockbot"
+}
 ```
 
 ## Usage
 
-Once up and running
+create a config.json and run
 ```
 npm install
 npm start
@@ -31,7 +36,7 @@ users can display stock information with an appropriate slash command (eg. /stoc
 
 ### Example Output
 
-![slack stockbot](img/slack_stockbot_example.png)
+> Apple Inc.: *114.6*$ (+1%) Dividend: *2.0100%* - 52w: *89.5-123.8*$ -7.4110% below its 52 high   AAPL on google and yahoo
 
 
  
