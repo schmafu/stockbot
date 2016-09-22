@@ -13,10 +13,10 @@ Slack Integration for Displaying Stock Information
 
 A [Slack](https://api.slack.com/) slash-command and an incoming webhook must be configured.
 
-**config.js**
+**config.json**
 ```javascript
 {
-"slackToken":"secretToken,
+"slackToken":"secretToken",
 "webHook":"https://hooks.slack.com/services/yourWebHook",
 "port":4715,
 "channel": "stocks",
@@ -36,7 +36,7 @@ users can display stock information with an appropriate slash command (eg. /stoc
 
 ### Example Output
 
-Apple Inc.: *114.6*$ (+1%) Dividend: *2.0100%* - 52w: *89.5-123.8*$ -7.4110% below its 52 high   AAPL on google and yahoo
+> Apple Inc.: *114.6*$ (+1%) Dividend: *2.0100%* - 52w: *89.5-123.8*$ -7.4110% below its 52 high   AAPL on google and yahoo
 
 
  
