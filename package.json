@@ -5,7 +5,7 @@
   "main": "stockbot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node stockbot.js"
+    "start": "node dist/stockbot.js"
   },
   "author": "Hannes Prirschl",
   "homepage": "https://github.com/schmafu/stockbot",

@@ -7,29 +7,15 @@ import {StockQuote} from "./models/yahoo-finance";
 
 var config = require("../config");
 
-/*
-class StockBot {
-    app:express.Application;
-    
-    constructor() {
-        this.app = express();        
-    }
-    
-    public static bootstrap(): StockBot {
-        return new StockBot();
-    }
-
-}*/
-
 const app = express();
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 }));
 
-
 app.post("/stockquote", (req,res) => {
     if (req.body.token !== config.slackToken) {
         console.log("wrong token: " + req.body.token); // for testing purpose
+        res.end();
         return
     }
     let yahoo = new YahooService();
@@ -38,9 +24,8 @@ app.post("/stockquote", (req,res) => {
         stockbot.send({text:`${data.name || data.symbol}: *${data.priceS}*${data.currency} (${data.changeInPercentS}) Dividend: *${data.dividendYield}%* - 52w: *${data.yearLowS}-${data.yearHighS}*${data.currency} ${data.yearLowHighExplanation}   ${data.symbol.toUpperCase()} on <http://www.google.com/finance?q=${data.symbol}|google> and <http://finance.yahoo.com/quote/${data.symbol}|yahoo>`,
         channel:"aktien",
         username:"stockbot"});
-        res.end();
-        //res.json(data);
+        res.end();        
     })    
 });
-app.listen(4715);
+app.listen(config.port);
 

@@ -3,7 +3,8 @@
         "module": "commonjs",
         "sourceMap": true,
         "watch":true,
-        "target": "ES6"
+        "target": "ES6",
+        "outDir": "dist"
     },
     "exclude": [
         "typings/browser.d.ts",

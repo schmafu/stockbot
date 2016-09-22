@@ -4,19 +4,6 @@ const bodyParser = require("body-parser");
 const slack = require("node-slack");
 const yahoo_service_1 = require("./services/yahoo-service");
 var config = require("../config");
-/*
-class StockBot {
-    app:express.Application;
-    
-    constructor() {
-        this.app = express();
-    }
-    
-    public static bootstrap(): StockBot {
-        return new StockBot();
-    }
-
-}*/
 const app = express();
 app.use(bodyParser.urlencoded({
     extended: true
@@ -24,6 +11,7 @@ app.use(bodyParser.urlencoded({
 app.post("/stockquote", (req, res) => {
     if (req.body.token !== config.slackToken) {
         console.log("wrong token: " + req.body.token); // for testing purpose
+        res.end();
         return;
     }
     let yahoo = new yahoo_service_1.YahooService();
@@ -33,8 +21,7 @@ app.post("/stockquote", (req, res) => {
             channel: "aktien",
             username: "stockbot" });
         res.end();
-        //res.json(data);
     });
 });
-app.listen(4715);
+app.listen(config.port);
 //# sourceMappingURL=stockbot.js.map
