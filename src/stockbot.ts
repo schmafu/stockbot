@@ -31,7 +31,7 @@ app.post("/stockquote", (req,res) => {
     let google = new GoogleService();
     google.fetchQuotes(req.body.text).then(data => {
         let stockbot = new slack(config.webHook);
-        stockbot.send({text:`${data.symbol}: *${data.lastTradePrice}*${data.currency} (${data.changePercent}), more infos: <http://www.google.com/finance?q=${data.symbol}|google> or <http://finance.yahoo.com/quote/${data.symbol}|yahoo>`,
+        stockbot.send({text:`${data.symbol}: *${data.lastTradePrice}*${data.currency} (${data.prettyChangePercent}), more infos: <http://www.google.com/finance?q=${data.symbol}|google> or <http://finance.yahoo.com/quote/${data.symbol}|yahoo>`,
         channel:"aktien",
         username:"stockbot"});
         res.end();        
