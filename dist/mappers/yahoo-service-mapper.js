@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class YahooServiceMapper {
     static mapToStockQuote(jsonString) {
         let data = JSON.parse(jsonString);

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const yahoo_service_1 = require("./services/yahoo-service");
 let ys = new yahoo_service_1.YahooService();
 ys.fetchQuotes("AAPL").then(data => {

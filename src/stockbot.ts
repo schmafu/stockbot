@@ -1,3 +1,4 @@
+import { GoogleService } from './services/google-service';
 import * as express from "express";
 import * as bodyParser from "body-parser";
 import * as slack from "node-slack";
@@ -18,6 +19,7 @@ app.post("/stockquote", (req,res) => {
         res.end();
         return
     }
+    /*
     let yahoo = new YahooService();
     yahoo.fetchQuotes(req.body.text).then(data => {
         let stockbot = new slack(config.webHook);
@@ -25,7 +27,15 @@ app.post("/stockquote", (req,res) => {
         channel:"aktien",
         username:"stockbot"});
         res.end();        
-    })    
+    }); */
+    let google = new GoogleService();
+    google.fetchQuotes(req.body.text).then(data => {
+        let stockbot = new slack(config.webHook);
+        stockbot.send({text:`${data.symbol}: *${data.lastTradePrice}*${data.currency} (${data.changePercent}), more infos: <http://www.google.com/finance?q=${data.symbol}|google> or <http://finance.yahoo.com/quote/${data.symbol}|yahoo>`,
+        channel:"aktien",
+        username:"stockbot"});
+        res.end();        
+    }); 
 });
 app.listen(config.port);
 

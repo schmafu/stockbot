@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const yahoo_service_mapper_1 = require("../mappers/yahoo-service-mapper");
 const rp = require("request-promise");
 class YahooService {
